@@ -12,5 +12,6 @@
 /* Function declaration */
 /* The 's' prefix means similar. */
 char s_atochar(char *str);
+void s_chartoa(char val, char *str);
 
 #endif

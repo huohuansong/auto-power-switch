@@ -9,9 +9,9 @@
 #include "stdlib.h"
 
 /**
- * @brief   Convert string to char (int8).
- * @param   str: string to be converted
- * @return  unsigned char: the converted string value
+ * @brief     Convert string to char (int8).
+ * @param[in] str: string to be converted
+ * @return    unsigned char: the converted string value
  */
 char s_atochar(char *str)
 {
@@ -36,4 +36,32 @@ char s_atochar(char *str)
 	ret *= neg_flag;
 
 	return ret;
+}
+
+/**
+ * @brief      Convert char (int8) to string.
+ * @param[in]  val: char (int8) to be converted
+ * @param[out] str: the output string
+ * @return     none
+ */
+void s_chartoa(char val, char *str)
+{
+	char *p = str;
+
+	if (val < 0) {
+		*p++ = '-';
+		val = 0 - val;
+	}
+
+	if (val < 10) {
+		*p++ = '0' + val;
+	} else if (val >= 10 && val < 100) {
+		*p++ = '0' + (val / 10);
+		*p++ = '0' + (val % 10);
+	} else {
+		*p++ = '0' + (val / 100);
+		*p++ = '0' + ((val % 100) / 10);
+		*p++ = '0' + (val % 10);
+	}
+	*p = 0;
 }
