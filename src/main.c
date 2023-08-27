@@ -13,6 +13,7 @@
 #include "interrupt.h"
 #include "gpio.h"
 #include "uart.h"
+#include "port.h"
 #include "cli.h"
 #include "cli_cmd.h"
 
@@ -33,6 +34,7 @@ void main(void)
 	global_interrupt_enable();
 
 	/* Application initialization */
+	port_init();
 	cli_cmd_init(cli_print_string);
 	cli_init();
 

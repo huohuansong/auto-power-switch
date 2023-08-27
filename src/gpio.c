@@ -21,8 +21,8 @@
  */
 void gpio_init(void)
 {
-	SET_POWER_STATUS(POWER_CHANNEL_1, POWER_OFF);
-	SET_POWER_STATUS(POWER_CHANNEL_2, POWER_OFF);
+	P3_2 = 0;
+	P3_3 = 0;
 	P3M0 = 0;
 	P3M1 = 0;
 	P5M0 = 0;

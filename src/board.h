@@ -17,28 +17,8 @@
 #define LED_OFF 0
 #define LED_ON  1
 
-#define POWER_CHANNEL_1   1
-#define POWER_CHANNEL_2   2
-#define POWER_CHANNEL_NUM 2
-
-#define POWER_OFF 0
-#define POWER_ON  1
-
-#define POWER_CONTROL_MODE_AUTO   0
-#define POWER_CONTROL_MODE_MANUAL 1
-
 #define SET_HEARTBEAT_LED_STATUS(onoff) do { \
 		P5_5 = (LED_ON == onoff) ? 0 : 1; \
-	} while(0)
-
-#define SET_POWER_STATUS(channel, onoff) do { \
-		if (POWER_CHANNEL_1 == channel) { \
-			P3_2 = (POWER_ON == onoff) ? 1 : 0; \
-		} else if (POWER_CHANNEL_2 == channel)  { \
-			P3_3 = (POWER_ON == onoff) ? 1 : 0; \
-		} else { \
-			\
-		} \
 	} while(0)
 
 /* Inline functions */

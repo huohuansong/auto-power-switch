@@ -13,6 +13,7 @@
 #include "interrupt.h"
 #include "gpio.h"
 #include "uart.h"
+#include "port.h"
 #include "cli.h"
 #include "cli_cmd.h"
 
@@ -21,8 +22,6 @@
 
 /* Global */
 static void (*print_str)(unsigned char *str) = NULL;
-static g_port_status[POWER_CHANNEL_NUM] = {0};
-static g_port_mode[POWER_CHANNEL_NUM] = {0};
 
 /**
  * @brief     CLI command initialization function.
@@ -31,14 +30,7 @@ static g_port_mode[POWER_CHANNEL_NUM] = {0};
  */
 void cli_cmd_init(void *cb_pr_str)
 {
-	unsigned char i = 0;
-
 	print_str = cb_pr_str;
-
-	for (i = 0; i < POWER_CHANNEL_NUM; ++i) {
-		g_port_status[i] = POWER_OFF;
-		g_port_mode[i] = POWER_CONTROL_MODE_MANUAL;
-	}
 }
 
 /**
@@ -149,17 +141,17 @@ unsigned char cli_cmd_process_help(unsigned char argc, unsigned char **argv)
 			print_str("port [port num] active                     Activate the bound profile\r\n");
 			print_str("port [port num] status                     Display port status\r\n");
 		} else if (!s_strcmp(argv[1], "profile")) {
-			print_str("profile create <name>                      Create a new profile\r\n");
-			print_str("profile delete <name>                      Delete a specified profile\r\n");
+			// print_str("profile create <name>                      Create a new profile\r\n");
+			// print_str("profile delete <name>                      Delete a specified profile\r\n");
 			print_str("profile show [name]                        Display profile content\r\n");
 			print_str("profile clear <name> <all | line num>      Clear the content of the specified line\r\n");
 			print_str("profile modify <name> <line num> <string>  Modify the content of the specified line\r\n");
 			print_str("profile save [name]                        Save profile\r\n");
 		} else {
-			return (unsigned char)(argv[2] - argv[0]);
+			return (unsigned char)(argv[1] - argv[0]);
 		}
 	} else {
-		return (unsigned char)(argv[3] - argv[0]);
+		return (unsigned char)(argv[2] - argv[0]);
 	}
 
 	return CLI_PROCESS_RET_SUCCESS;
@@ -175,46 +167,76 @@ unsigned char cli_cmd_process_help(unsigned char argc, unsigned char **argv)
  */
 unsigned char cli_cmd_process_port(unsigned char argc, unsigned char **argv)
 {
-	char channel = -1;
+	unsigned char i = 0;
+	char user_port = -1;
+	unsigned char flag_port_all = FALSE;
+	unsigned char action_argv_index = 2;  /* for all port */
+	struct port_attr attr = {0};
+	char str[3] = {0};
 
 	if (1 == argc) {
 		return s_strlen("port") + 1;
 	}
 
-	channel = s_atochar(argv[1]);
-	if (channel != POWER_CHANNEL_1 && channel != POWER_CHANNEL_2) {
-		print_str("\r\nThe port is invalid, please input again.\r\n");
-		return CLI_PROCESS_RET_SUCCESS;
+	user_port = s_atochar(argv[1]);
+	for (i = 0; i < PORT_NUM; i++) {
+		if (GET_PHYSICAL_PORT_FROM_USER_PORT(user_port) == i) {
+			break;
+		}
+	}
+	if (i == PORT_NUM) {
+		flag_port_all = TRUE;
+		action_argv_index = 1;
 	}
 
-	if (!s_strcmp(argv[2], "on")) {
-		SET_POWER_STATUS(channel, POWER_ON);
-		g_port_status[channel - 1] = POWER_ON;
-		g_port_mode[channel - 1] = POWER_CONTROL_MODE_MANUAL;
-	} else if (!s_strcmp(argv[2], "off")) {
-		SET_POWER_STATUS(channel, POWER_OFF);
-		g_port_status[channel - 1] = POWER_OFF;
-		g_port_mode[channel - 1] = POWER_CONTROL_MODE_MANUAL;
-	} else if (!s_strcmp(argv[2], "bind-profile")) {
+	if (!s_strcmp(argv[action_argv_index], "on")) {
+		if (TRUE == flag_port_all) {
+			for (i = 0; i < PORT_NUM; ++i) {
+				port_set_power_status(i, PORT_POWER_ON);
+			}
+		} else {
+			port_set_power_status(GET_PHYSICAL_PORT_FROM_USER_PORT(user_port), PORT_POWER_ON);
+		}
+	} else if (!s_strcmp(argv[action_argv_index], "off")) {
+		if (TRUE == flag_port_all) {
+			for (i = 0; i < PORT_NUM; ++i) {
+				port_set_power_status(i, PORT_POWER_OFF);
+			}
+		} else {
+			port_set_power_status(GET_PHYSICAL_PORT_FROM_USER_PORT(user_port), PORT_POWER_OFF);
+		}
+	} else if (!s_strcmp(argv[action_argv_index], "bind-profile")) {
 
-	} else if (!s_strcmp(argv[2], "unbind-profile")) {
+	} else if (!s_strcmp(argv[action_argv_index], "unbind-profile")) {
 
-	} else if (!s_strcmp(argv[2], "active")) {
-		g_port_mode[channel - 1] = POWER_CONTROL_MODE_AUTO;
-	} else if (!s_strcmp(argv[2], "status")) {
+	} else if (!s_strcmp(argv[action_argv_index], "active")) {
+
+	} else if (!s_strcmp(argv[action_argv_index], "status")) {
 		print_str("\r\n");
 		print_str("Port   Mode   Status\r\n");
-		print_str("------------------\r\n");
-		print_str("1      ");
-		print_str((g_port_mode[0] == POWER_CONTROL_MODE_AUTO) ? "Auto" : "Manual");
-		print_str((g_port_status[0] == POWER_ON) ? "On" : "Off");
-		print_str("\r\n");
-		print_str("2      ");
-		print_str((g_port_mode[1] == POWER_CONTROL_MODE_AUTO) ? "Auto" : "Manual");
-		print_str((g_port_status[1] == POWER_ON) ? "On" : "Off");
-		print_str("\r\n");
+		print_str("--------------------\r\n");
+		if (TRUE == flag_port_all) {
+			for (i = 0; i < PORT_NUM; ++i) {
+				port_get_port_status(i, &attr);
+				s_chartoa(GET_UESR_PORT_FROM_PHYSICAL_PORT(i), str);
+				print_str(str);
+				print_str("      ");
+				print_str((attr.mode == PORT_POWER_CONTROL_MODE_AUTO) ? "Auto" : "Manual");
+				print_str(" ");
+				print_str((attr.running_status == PORT_POWER_ON) ? "On" : "Off");
+				print_str("\r\n");
+			}
+		} else {
+			s_chartoa(user_port, str);
+			print_str(str);
+			print_str("      ");
+			print_str((attr.mode == PORT_POWER_CONTROL_MODE_AUTO) ? "Auto" : "Manual");
+			print_str(" ");
+			print_str((attr.running_status == PORT_POWER_ON) ? "On" : "Off");
+			print_str("\r\n");
+		}
 	} else {
-		return (unsigned char)(argv[2] - argv[0]);;
+		return (unsigned char)(argv[action_argv_index] - argv[0]);
 	}
 
 	return CLI_PROCESS_RET_SUCCESS;

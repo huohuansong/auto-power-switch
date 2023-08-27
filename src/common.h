@@ -29,4 +29,8 @@
 #define DISABLE 0
 #endif
 
+#define RET_SUCCESSFUL  0
+#define RET_POINT_NULL  1
+#define RET_PARA_ERROR  2
+
 #endif
