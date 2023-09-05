@@ -1,0 +1,6 @@
+*.hex
+
+src/build
+src/lib/build
+
+*.lib
