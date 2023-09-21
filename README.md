@@ -30,7 +30,7 @@ Suppose we use the `work` directory of the current user directory as the working
 
 `git clone https://github.com/huohuansong/auto-power-switch.git`
 
-**Step 3. compile**
+**Step 3. Compile**
 
 `cd auto-power-switch/src/`
 
@@ -40,4 +40,6 @@ After successful compilation, the output file is `fw_***.hex`, and compile tempo
 
 # How to use
 
-To do.
+See the [document](docs/user_manual/user_manual.md) for details.
+
+# Known problem
