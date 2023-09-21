@@ -21,39 +21,83 @@ A typical usage example is shown in the following figure.
 
 ### 2.1 Convention
 
-| Symbol | Meaning |
-| ------ | ------- |
-| <...>  | This is a mandatory field |
-| [...]  | This is a optional field  |
-| \|     | Indicates either one out of two or one out of many |
-| all    | For all |
-| num    | An integer number |
-| string | A string |
+| Symbol  | Meaning |
+| ------- | ------- |
+| \<...\> | This is a mandatory field |
+| [...]   | This is a optional field  |
+| \|      | Indicates either one out of two or one out of many |
+| all     | For all |
+| command | Main command word |
+| number  | An integer number |
+| string  | A string |
 |
 
 ### 2.2 Command Line Interface
 
-| Command                                     | Meaning |
-| ------------------------------------------- | ---- |
-| help [command]                              | `help` root command or help for specific commands |
-| port [port num] on                          | Open the specified port or all ports |
-| port [port num] off                         | Close the specified port or all ports |
-| port [port num] bind-profile <profile name> | Bind a specified profile to a port or all ports |
-| port [port num] unbind-profile              | Unbind port or all ports profile |
-| port [port num] active                      | Port needs to be activated after binding the profile |
-| port [port num] status                      | Display the ports current status |
-| profile create <name>                       | Create a profile with a specified name |
-| profile show [name]                         | Display profile content |
-| profile delete <name>                       | Delete a profile with a specified name |
-| profile clear <name> <all | line num>       | Delete a specified line or all lines of a specified profile |
-| profile modify <name> <line num> <string>   | Modify a specified line of a specified profile |
-| profile check <name>                        | Check if the profile is legal |
-| profile save [name]                         | Save a specified profile or all profiles to NVRAM |
+| Command                                             | Meaning |
+| ---                                                 | --- |
+| help [config \| port \| profile]                    | `help` root command or help for specific commands |
+| config show                                         | Display current configuration |
+| config save                                         | Save current configuration to NVRAM |
+| config clear \<all \| current \| saved\>            | Clear all / current / saved configuration |
+| port [port number] on                               | Open the specified port or all ports |
+| port [port number] off                              | Close the specified port or all ports |
+| port [port number] bind-profile \<profile name\>    | Bind a specified profile to a port or all ports |
+| port [port number] unbind-profile                   | Unbind port or all ports profile |
+| port [port number] active                           | Port needs to be activated after binding the profile |
+| port [port number] status                           | Display the ports current status |
+| profile create \<name\> [max line number]           | Create a profile with a specified name and specify the maximum line number. If max number is omitted, max number defaults to 20 |
+| profile show [name]                                 | Display profile content |
+| profile delete \<name\>                             | Delete a profile with a specified name |
+| profile clear \<name\> \<all \| line number\>       | Delete a specified line or all lines of a specified profile |
+| profile modify \<name\> \<line number\> \<string\>  | Modify a specified line of a specified profile |
+| profile check \<name>                               | Check if the profile is legal |
+| profile save [name]                                 | Save a specified profile or all profiles to NVRAM |
 |
 
 ### 2.3 Examples
 
+**Example 1: Open all ports manually**
+```
+> port on
+```
 
+**Example 2: Close all ports manually**
+```
+> port off
+```
+
+**Example 3: Open port 1 manually**
+```
+> port 1 on
+```
+
+**Example 4: Display port status**
+```
+> port status
+```
+
+**Example 5: Create a profile called '`twinkle`' for port cycle on and off**
+```
+> profile create twinkle
+> profile modify twinkle 1 "on"
+> profile modify twinkle 2 "wait 500"
+> profile modify twinkle 3 "off"
+> profile modify twinkle 4 "wait 500"
+> profile modify twinkle 5 "goto 1"
+> profile check twinkle
+> profile save twinkle
+```
+**Example 6: Show profile '`twinkle`' content'**
+```
+> profile show twinkle
+```
+
+**Example 7: All ports bind profile named '`twinkle`' and active**
+```
+> port bind-profile twinkle
+> port active
+```
 
 ## 3. Profile Design
 
