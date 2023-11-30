@@ -16,7 +16,11 @@
 #include "uart.h"
 
 /* Global */
+#if defined(TARGET_CHIP_STC8G1K17A)
+__xdata static struct port_attr g_port[PORT_NUM];
+#else
 static struct port_attr g_port[PORT_NUM];
+#endif
 
 /**
  * @brief   Port initialization function.
