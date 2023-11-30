@@ -27,6 +27,7 @@ struct delay_node_st {
 };
 
 /* Function declaration */
+int delay_node_set_valid(unsigned char index, unsigned char valid, unsigned char arg, unsigned short reset_value, unsigned char reload);
 void delay_node_traverse(void);
 void delay_init(void);
 

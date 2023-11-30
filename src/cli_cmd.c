@@ -13,6 +13,8 @@
 #include "interrupt.h"
 #include "gpio.h"
 #include "uart.h"
+#include "delay.h"
+
 #include "port.h"
 #include "cli.h"
 #include "cli_cmd.h"
@@ -136,6 +138,7 @@ unsigned char cli_cmd_process_help(unsigned char argc, unsigned char **argv)
 		if (!s_strcmp(argv[1], "port")) {
 			print_str("port [port num] on                         Manual mode, turn on the power\r\n");
 			print_str("port [port num] off                        Manual mode, turn off the power\r\n");
+			print_str("port [port num] reset                      Manual mode, turn off and delay 1s then turn on\r\n");
 			print_str("port [port num] bind-profile <name>        Automatic mode, bind a specified profile\r\n");
 			print_str("port [port num] unbind-profile             Automatic mode, unbind profile\r\n");
 			print_str("port [port num] active                     Activate the bound profile\r\n");
@@ -204,6 +207,16 @@ unsigned char cli_cmd_process_port(unsigned char argc, unsigned char **argv)
 			}
 		} else {
 			port_set_power_status(GET_PHYSICAL_PORT_FROM_USER_PORT(user_port), PORT_POWER_OFF);
+		}
+	} else if (!s_strcmp(argv[action_argv_index], "reset")) {
+		if (TRUE == flag_port_all) {
+			for (i = 0; i < PORT_NUM; ++i) {
+				port_set_power_status(i, PORT_POWER_OFF);
+			}
+			delay_node_set_valid(DELAY_NODE_PORT_RESET, TRUE, 0x07, 1000, FALSE);
+		} else {
+			port_set_power_status(GET_PHYSICAL_PORT_FROM_USER_PORT(user_port), PORT_POWER_OFF);
+			delay_node_set_valid(DELAY_NODE_PORT_RESET, TRUE, 0x01 << GET_PHYSICAL_PORT_FROM_USER_PORT(user_port), 1000, FALSE);
 		}
 	} else if (!s_strcmp(argv[action_argv_index], "bind-profile")) {
 
