@@ -23,7 +23,7 @@ char s_atochar(char *str)
 	}
 
 	if (*str == '-') {
-		neg_flag = 1;
+		neg_flag = -1;
 		str++;
 	} else if (*str == '+') {
 		str++;
