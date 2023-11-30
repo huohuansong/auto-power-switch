@@ -13,6 +13,8 @@
 #include "interrupt.h"
 #include "gpio.h"
 #include "uart.h"
+#include "delay.h"
+
 #include "port.h"
 #include "cli.h"
 #include "cli_cmd.h"
@@ -31,6 +33,7 @@ void main(void)
 	board_init();
 	timer0_start();
 	uart1_start();
+	delay_init();
 	global_interrupt_enable();
 
 	/* Application initialization */

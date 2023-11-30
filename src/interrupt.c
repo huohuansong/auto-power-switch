@@ -13,11 +13,10 @@
 #include "interrupt.h"
 #include "gpio.h"
 #include "uart.h"
+#include "delay.h"
 
 /* Global */
 volatile __bit g_uart1_tx_busy = 0;
-volatile unsigned char heartbeat_led_status = LED_OFF;
-volatile unsigned short count = 0;
 
 /**
  * @brief   Timer0 ISR
@@ -26,17 +25,7 @@ volatile unsigned short count = 0;
  */
 void timer0_isr(void) __interrupt TF0_VECTOR
 {
-	count++;
-	if (count == 1000) {
-		count = 0;
-		if (LED_ON == heartbeat_led_status) {
-			heartbeat_led_status = LED_OFF;
-		} else {
-			heartbeat_led_status = LED_ON;
-		}
-		SET_HEARTBEAT_LED_STATUS(heartbeat_led_status);
-		count = 0;
-	}
+	delay_node_traverse();
 }
 
 /**
