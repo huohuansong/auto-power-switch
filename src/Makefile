@@ -20,6 +20,10 @@ CFLAGS        = -DTARGET_CHIP_$(CHIP)
 CFLAGS       += --nostdinc
 LDFLAGS       = --nostdinc
 
+ifeq ($(CHIP), STC8G1K17A)
+LDFLAGS      += --xram-size 1024
+LDFLAGS      += --code-size 17408
+endif
 
 all:check_env prepare lib $(TARGET) meminfo
 	@echo "All done."
