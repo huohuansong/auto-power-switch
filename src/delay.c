@@ -93,7 +93,9 @@ void delay_node_traverse(void)
 			continue;
 		}
 		if (0 == g_delay_node[i].current_value) {
-			g_delay_node[i].callback(g_delay_node[i].arg);
+			if (NULL != g_delay_node[i].callback) {
+				g_delay_node[i].callback(g_delay_node[i].arg);
+			}
 			if (TRUE == g_delay_node[i].reload) {
 				g_delay_node[i].current_value = g_delay_node[i].reset_value;
 			} else {
